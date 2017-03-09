@@ -168,7 +168,7 @@ def determineAngleFromPicture(data):
                 arrowJ[binBin] = j
 
         #Determine direction
-        if j>=len(data[0]) or j<0 or i>=len(data) or i<0:   #Outside the picture region. Pixel is Not-Red.
+        if i>=len(data) or j<0 or j>=len(data[0]) or i<0:   #Outside the picture region. Pixel is Not-Red.
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
