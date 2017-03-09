@@ -69,13 +69,13 @@ def searchHorizontalCentre(data,starti,startj):                 #Go left as far 
 def correctStartPoint(data,starti,startj,centre):
     if (startj != centre):                                      #Correct startj if the StartPoint in not in the centre. Otherwise assume that startj is OK.
         startj = searchHorizontalCentre(data,starti,startj)
-    while (starti>0) and isRed(data[starti-1][startj]):         #Make sure the StartPoint is on the border of the main Red region.
-        starti -= 1
+    while (starti<len(data)-1) and isRed(data[starti+1][startj]):         #Make sure the StartPoint is on the border of the main Red region.
+        starti += 1
     return [starti,startj]
 
 def determineStartPoint(data):              #The StartPoint is determined by searching for the first pixel that is in a Red region.
     centre = len(data[0])//2
-    for i in range(1,len(data)-1,10):       #Start from the top row.
+    for i in range(len(data)-1,1,-10):      #Start from the top row.
         for dj in range(0,centre-2,2):      #Search outwards from the centre.
             j = centre+dj
             if isInRedRegion(i,j,data):
@@ -83,7 +83,7 @@ def determineStartPoint(data):              #The StartPoint is determined by sea
             j = centre-dj
             if isInRedRegion(i,j,data):
                 return correctStartPoint(data,i,j,centre)
-    return [0,0]                            #We did not find a proper StartPoint. This return value results in a large steering angle, so that the car can turn around.
+    return [len(data)-1,0]                  #We did not find a proper StartPoint. This return value results in a large steering angle, so that the car can turn around.
 
 
 
@@ -97,8 +97,8 @@ def determineStartPoint(data):              #The StartPoint is determined by sea
 def distance(i0,j0,i1,j1):
     deltai = i1-i0
     deltaj = j1-j0
-    #return deltai*(deltai*deltai+deltaj*deltaj)
-    return deltai*deltai*deltai+deltaj*deltaj
+    #return -deltai*(deltai*deltai+deltaj*deltaj)
+    return -deltai*deltai*deltai+deltaj*deltaj
 
 def angle(x0,y0,x1,y1):
     return int(round(atan2(y1-y0,x1-x0)*57.29578))
@@ -128,7 +128,7 @@ def determineAngleFromPicture(data):
     starti,startj = determineStartPoint(data)
     i = starti
     j = startj
-    direction = 0
+    direction = 2
     steps = 0
 
 
@@ -164,10 +164,10 @@ def determineAngleFromPicture(data):
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
-                #colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
+                colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+3)%4                 #(x+3)%4 corresponds to (x-1)%4
             else:                                           #Not-Red
-                #colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
+                colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+1)%4
 
 
@@ -181,8 +181,8 @@ def determineAngleFromPicture(data):
             maximumLength = length
             maximumBin = binBinBin
 
-    #drawLine(data,0,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
-    return angle(0,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])
+    drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
+    return angle(len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])
 
 
 
@@ -205,7 +205,7 @@ def convert_image(in_name, out_name):
     print( time.clock() - start_time, "seconds")
     misc.imsave(out_name, data)
 
-in_dir = './test_data/test1/'
+in_dir = './test_data/test1upsideup/'
 out_dir = './result/'
 all_items = listdir(in_dir)
 index = 0
