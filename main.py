@@ -15,7 +15,7 @@ BLUE = 2
 #Parameters
 THRESHOLD = 25
 ANGLEBINSIZE = 1
-CONTOURSAMPLEINTERVAL = 1
+CONTOURSAMPLEINTERVAL = 2
 
 
 
@@ -52,7 +52,7 @@ def drawLine(data,x0,y0,x1,y1):
 ##
 ######
 def isRed(pixel):
-    if pixel[RED]>(pixel[GREEN]+THRESHOLD) and pixel[RED]>(pixel[BLUE]+THRESHOLD):
+    if pixel[RED]>(pixel[BLUE]+THRESHOLD) and pixel[RED]>(pixel[GREEN]+THRESHOLD):
         return True
     else:
         return False
@@ -168,7 +168,7 @@ def determineAngleFromPicture(data):
                 arrowJ[binBin] = j
 
         #Determine direction
-        if i<0 or j<0 or i>=len(data) or j>=len(data[0]):   #Outside the picture region. Pixel is Not-Red.
+        if j>=len(data[0]) or j<0 or i>=len(data) or i<0:   #Outside the picture region. Pixel is Not-Red.
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
