@@ -30,6 +30,14 @@ def colorPixel(pixel,redValue,greenValue,blueValue):
     pixel[BLUE] = blueValue
 
 def drawLine(data,x0,y0,x1,y1):
+    if x1<0:
+        x1=0
+    elif x1>=len(data):
+        x1=len(data)-1
+    if y1<0:
+        y1=0
+    elif y1>=len(data[0]):
+        y1=len(data[0])-1
     for i in range(1,100):
         alpha = i/100.0
         colorPixel(data[int(round(x0+alpha*(x1-x0)))][int(round(y0+alpha*(y1-y0)))],255,255,255)
@@ -69,13 +77,13 @@ def searchHorizontalCentre(data,starti,startj):                 #Go left as far 
 def correctStartPoint(data,starti,startj,centre):
     if (startj != centre):                                      #Correct startj if the StartPoint in not in the centre. Otherwise assume that startj is OK.
         startj = searchHorizontalCentre(data,starti,startj)
-    while (starti<len(data)-1) and isRed(data[starti+1][startj]):         #Make sure the StartPoint is on the border of the main Red region.
+    while (starti<len(data)-1) and isRed(data[starti+1][startj]):   #Make sure the StartPoint is on the border of the main Red region.
         starti += 1
     return [starti,startj]
 
 def determineStartPoint(data):              #The StartPoint is determined by searching for the first pixel that is in a Red region.
     centre = len(data[0])//2
-    for i in range(len(data)-1,1,-10):      #Start from the top row.
+    for i in range(len(data)-2,1,-10):      #Start from the bottom row.
         for dj in range(0,centre-2,2):      #Search outwards from the centre.
             j = centre+dj
             if isInRedRegion(i,j,data):
@@ -97,11 +105,11 @@ def determineStartPoint(data):              #The StartPoint is determined by sea
 def distance(i0,j0,i1,j1):
     deltai = i1-i0
     deltaj = j1-j0
-    #return -deltai*(deltai*deltai+deltaj*deltaj)
-    return -deltai*deltai*deltai+deltaj*deltaj
+    #return deltai*(deltai*deltai+deltaj*deltaj)
+    return deltai*deltai*deltai+deltaj*deltaj
 
-def angle(x0,y0,x1,y1):
-    return int(round(atan2(y1-y0,x1-x0)*57.29578))
+def angle(i0,j0,i1,j1):
+    return int(round(atan2(j1-j0,i1-i0)*57.29578))
 
 def angleToBin(angle):
     if (angle == 180):      #Fix for a problem that appears because of rounding in angle(). This is unavoidable if we want proper rounding in angle().
@@ -152,8 +160,8 @@ def determineAngleFromPicture(data):
 
         #Measure arrow length
         if steps%CONTOURSAMPLEINTERVAL == 0:
-            binBin = angleToBin(angle(starti,startj,i,j))
-            length = distance(starti,startj,i,j)
+            binBin = angleToBin(angle(i,j,starti,startj))
+            length = distance(i,j,starti,startj)
             if (arrowLengths[binBin]>length):
                 arrowLengths[binBin] = length
                 arrowI[binBin] = i
@@ -182,7 +190,7 @@ def determineAngleFromPicture(data):
             maximumBin = binBinBin
 
     drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
-    return angle(len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])
+    return angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
 
 
 
@@ -205,7 +213,7 @@ def convert_image(in_name, out_name):
     print( time.clock() - start_time, "seconds")
     misc.imsave(out_name, data)
 
-in_dir = './test_data/test1upsideup/'
+in_dir = './test_data/test1/'
 out_dir = './result/'
 all_items = listdir(in_dir)
 index = 0
