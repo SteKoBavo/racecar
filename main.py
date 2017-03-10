@@ -151,7 +151,7 @@ def determineAngleFromPicture(data):
             j -= 1
 
         #Stop condition
-        if (i == starti and j == startj) or (steps>40*len(data)):
+        if (i == starti and j == startj and steps>20) or (steps>40*len(data)):
             break
 
         #Measure arrow length
@@ -207,8 +207,8 @@ def determineAngleFromPicture(data):
 def convert_image(in_name, out_name):
     data = image.imread(in_name)
     start_time = time.clock()
-    determineAngleFromPicture(data)
-    print( time.clock() - start_time, "seconds")
+    angle,vertical = determineAngleFromPicture(data)
+    print( time.clock() - start_time, "seconds", angle, vertical)
     misc.imsave(out_name, data)
 
 in_dir = './test_data/test1/'
