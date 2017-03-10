@@ -187,7 +187,7 @@ def determineAngleFromPicture(data):
 
     drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
-    relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/len(data)
+    relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
     return [angleToTarget,relativeVerticalFreeSpace]
 
 
