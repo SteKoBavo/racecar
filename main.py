@@ -12,6 +12,8 @@ RED = 0
 GREEN = 1
 BLUE = 2
 
+ANGLEBINSIZE = 10
+
 
 
 ######
@@ -47,7 +49,7 @@ def drawLine(data,x0,y0,x1,y1):
 ##
 ######
 def isRed(pixel):                           #Optimized version of isRed
-    pixelRedMinusThreshold = pixel[0] - 25
+    pixelRedMinusThreshold = pixel[0] - 50
     if pixelRedMinusThreshold>pixel[2] and pixelRedMinusThreshold>pixel[1]:
         return True
     else:
@@ -110,7 +112,7 @@ def angle(i0,j0,i1,j1):
 def angleToBin(angle):
     if (angle == 180):      #Fix for a problem that appears because of rounding in angle(). This is unavoidable if we want proper rounding in angle().
         angle = 179
-    return angle+180
+    return (angle+180)//ANGLEBINSIZE
 
 
 
@@ -123,7 +125,7 @@ def angleToBin(angle):
 #####
 def determineAngleFromPicture(data):
     #Measurement containers
-    numberOfBins = 360
+    numberOfBins = 360//ANGLEBINSIZE
     arrowLengths = [1999999999] * numberOfBins
     arrowI = [0] * numberOfBins
     arrowJ = [0] * numberOfBins
@@ -188,7 +190,7 @@ def determineAngleFromPicture(data):
     drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
     relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
-    return [angleToTarget,relativeVerticalFreeSpace]
+    return [angleToTarget,relativeVerticalFreeSpace,startj]
 
 
 
@@ -207,11 +209,11 @@ def determineAngleFromPicture(data):
 def convert_image(in_name, out_name):
     data = image.imread(in_name)
     start_time = time.clock()
-    angle,vertical = determineAngleFromPicture(data)
-    print( time.clock() - start_time, "seconds", angle, vertical)
+    angle,vertical,startj = determineAngleFromPicture(data)
+    print( time.clock() - start_time, "seconds", angle, vertical,startj)
     misc.imsave(out_name, data)
 
-in_dir = './test_data/test1/'
+in_dir = './test_data/test3/'
 out_dir = './result/'
 all_items = listdir(in_dir)
 index = 0
