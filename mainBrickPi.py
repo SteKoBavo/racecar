@@ -7,6 +7,39 @@ import time
 from math import atan2
 from math import tan
 
+RED = 0
+GREEN = 1
+BLUE = 2
+
+
+
+######
+##
+## Utility functions (FOR TESTING PURPOSES ONLY)
+##
+######
+def colorPixel(pixel,redValue,greenValue,blueValue):
+    pixel[RED] = redValue
+    pixel[GREEN] = greenValue
+    pixel[BLUE] = blueValue
+
+def drawLine(data,x0,y0,x1,y1):
+    if x1<0:
+        x1=0
+    elif x1>=len(data):
+        x1=len(data)-1
+    if y1<0:
+        y1=0
+    elif y1>=len(data[0]):
+        y1=len(data[0])-1
+    for i in range(1,100):
+        alpha = i/100.0
+        colorPixel(data[int(round(x0+alpha*(x1-x0)))][int(round(y0+alpha*(y1-y0)))],255,255,255)
+
+
+
+
+
 ######
 ##
 ## Determine the Start Point
@@ -134,8 +167,10 @@ def determineAngleFromPicture(data):
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
+                colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+3)%4                 #(x+3)%4 corresponds to (x-1)%4
             else:                                           #Not-Red
+                colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+1)%4
 
 
@@ -149,13 +184,17 @@ def determineAngleFromPicture(data):
             maximumLength = length
             maximumBin = binBinBin
 
+    drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
     relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/len(data)
     return [angleToTarget,relativeVerticalFreeSpace]
 
 
 
-##############################################################################################################
+
+
+
+
 
 
 
@@ -174,15 +213,15 @@ def updateSpeed(motor,speed):
 steering = PORT_A
 motor1 = PORT_B
 motor2 = PORT_C
-steeringSpeed = 100
-motorSpeed = -100
+steeringSpeed = -75
+motorSpeed = -50
 
 BrickPiSetup()
 BrickPi.MotorEnable[steering] = 1
 BrickPi.MotorEnable[motor1] = 1
 BrickPi.MotorEnable[motor2] = 1
 BrickPiSetupSensors()
-BrickPi.Timeout=20000
+BrickPi.Timeout=2000
 BrickPiSetTimeout()
 
 
@@ -192,7 +231,7 @@ with picamera.PiCamera() as camera:
         while True:
             updateSpeed(motor1,motorSpeed)
             updateSpeed(motor2,motorSpeed)
-            camera.capture(output, 'rgb')   # quicker: .., use_video_port = True)
+            camera.capture(output, 'rgb', use_video_port = True)
             target = determineAngleFromPicture(output.array)
             output.truncate(0)
             if target < 0:
@@ -200,12 +239,6 @@ with picamera.PiCamera() as camera:
             else:
                 updateSpeed(steering,-steeringSpeed)
             
-
-
-
-
-
-
 
 
 
