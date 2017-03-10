@@ -8,37 +8,7 @@ from datetime import datetime
 from math import atan2
 from math import tan
 
-RED = 0
-GREEN = 1
-BLUE = 2
-
 ANGLEBINSIZE = 10
-
-
-
-######
-##
-## Utility functions (FOR TESTING PURPOSES ONLY)
-##
-######
-def colorPixel(pixel,redValue,greenValue,blueValue):
-    pixel[RED] = redValue
-    pixel[GREEN] = greenValue
-    pixel[BLUE] = blueValue
-
-def drawLine(data,x0,y0,x1,y1):
-    if x1<0:
-        x1=0
-    elif x1>=len(data):
-        x1=len(data)-1
-    if y1<0:
-        y1=0
-    elif y1>=len(data[0]):
-        y1=len(data[0])-1
-    for i in range(1,100):
-        alpha = i/100.0
-        colorPixel(data[int(round(x0+alpha*(x1-x0)))][int(round(y0+alpha*(y1-y0)))],255,255,255)
-
 
 
 
@@ -170,10 +140,8 @@ def determineAngleFromPicture(data):
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
-                colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+3)%4                 #(x+3)%4 corresponds to (x-1)%4
             else:                                           #Not-Red
-                colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+1)%4
 
 
@@ -187,7 +155,6 @@ def determineAngleFromPicture(data):
             maximumLength = length
             maximumBin = binBinBin
 
-    drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
     relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
     return [angleToTarget,relativeVerticalFreeSpace,startj]
