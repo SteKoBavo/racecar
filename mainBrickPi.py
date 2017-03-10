@@ -7,6 +7,8 @@ import time
 from math import atan2
 from math import tan
 
+
+
 ######
 ##
 ## Determine the Start Point
@@ -150,12 +152,15 @@ def determineAngleFromPicture(data):
             maximumBin = binBinBin
 
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
-    relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/len(data)
+    relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
     return [angleToTarget,relativeVerticalFreeSpace]
 
 
 
-##############################################################################################################
+
+
+
+
 
 
 
@@ -192,21 +197,15 @@ with picamera.PiCamera() as camera:
         while True:
             updateSpeed(motor1,motorSpeed)
             updateSpeed(motor2,motorSpeed)
-            camera.capture(output, 'rgb',use_video_port = True)
+            camera.capture(output, 'rgb', use_video_port = True)
             target,vspace = determineAngleFromPicture(output.array)
-            print(target)
+            print(target,vspace)
             output.truncate(0)
             if target < 0:
                 updateSpeed(steering,steeringSpeed)
             else:
                 updateSpeed(steering,-steeringSpeed)
             
-
-
-
-
-
-
 
 
 
