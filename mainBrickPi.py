@@ -232,7 +232,8 @@ with picamera.PiCamera() as camera:
             updateSpeed(motor1,motorSpeed)
             updateSpeed(motor2,motorSpeed)
             camera.capture(output, 'rgb', use_video_port = True)
-            target = determineAngleFromPicture(output.array)
+            target,vspace = determineAngleFromPicture(output.array)
+            print(target,vspace)
             output.truncate(0)
             if target < 0:
                 updateSpeed(steering,steeringSpeed)
