@@ -186,7 +186,9 @@ def determineAngleFromPicture(data):
             maximumBin = binBinBin
 
     drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
-    return angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
+    angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
+    relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/len(data)
+    return [angleToTarget,relativeVerticalFreeSpace]
 
 
 
