@@ -155,7 +155,7 @@ def determineAngleFromPicture(data):
             break
 
         #Measure arrow length
-        if steps%2 == 0:
+        if steps%2 == 1:
             binBin = angleToBin(angle(i,j,starti,startj))
             length = distance(i,j,starti,startj)
             if (arrowLengths[binBin]>length):
