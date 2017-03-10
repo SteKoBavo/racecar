@@ -12,11 +12,6 @@ RED = 0
 GREEN = 1
 BLUE = 2
 
-#Parameters
-THRESHOLD = 25
-ANGLEBINSIZE = 1
-CONTOURSAMPLEINTERVAL = 2
-
 
 
 ######
@@ -51,8 +46,9 @@ def drawLine(data,x0,y0,x1,y1):
 ## Determine the Start Point
 ##
 ######
-def isRed(pixel):
-    if pixel[RED]>(pixel[BLUE]+THRESHOLD) and pixel[RED]>(pixel[GREEN]+THRESHOLD):
+def isRed(pixel):                           #Optimized version of isRed
+    pixelRedMinusThreshold = pixel[0] - 25
+    if pixelRedMinusThreshold>pixel[2] and pixelRedMinusThreshold>pixel[1]:
         return True
     else:
         return False
@@ -114,7 +110,7 @@ def angle(i0,j0,i1,j1):
 def angleToBin(angle):
     if (angle == 180):      #Fix for a problem that appears because of rounding in angle(). This is unavoidable if we want proper rounding in angle().
         angle = 179
-    return int((angle+180)/ANGLEBINSIZE)
+    return angle+180
 
 
 
@@ -127,7 +123,7 @@ def angleToBin(angle):
 #####
 def determineAngleFromPicture(data):
     #Measurement containers
-    numberOfBins = int(360/ANGLEBINSIZE)
+    numberOfBins = 360
     arrowLengths = [1999999999] * numberOfBins
     arrowI = [0] * numberOfBins
     arrowJ = [0] * numberOfBins
@@ -159,7 +155,7 @@ def determineAngleFromPicture(data):
             break
 
         #Measure arrow length
-        if steps%CONTOURSAMPLEINTERVAL == 0:
+        if steps%2 == 0:
             binBin = angleToBin(angle(i,j,starti,startj))
             length = distance(i,j,starti,startj)
             if (arrowLengths[binBin]>length):
