@@ -22,7 +22,13 @@ out_dir = './result/'
 all_items = listdir(in_dir)
 index = 0
 for item in all_items:
-    out_name = out_dir + "sample_" + str(index) + ".png"
+    out_name = out_dir + "pic" + str(index) + ".png"
+    if index<10:
+        out_name = out_dir + "pic000" + str(index) + ".png"
+    elif index<100:
+        out_name = out_dir + "pic00" + str(index) + ".png"
+    elif index<1000:
+        out_name = out_dir + "pic0" + str(index) + ".png"
     in_name = in_dir + item
     convert_image(in_name, out_name)
     index += 1
