@@ -1,14 +1,44 @@
-from BrickPi import *
-import picamera
-import picamera.array
+#FOR TESTING PURPOSES ONLY
+import scipy.ndimage as image
+import scipy.misc as misc
 import time
-from datetime import datetime
+from os import listdir
 
 #Necessary imports
 from math import atan2
 from math import tan
 
+RED = 0
+GREEN = 1
+BLUE = 2
+
 ANGLEBINSIZE = 10
+
+
+
+######
+##
+## Utility functions (FOR TESTING PURPOSES ONLY)
+##
+######
+def colorPixel(pixel,redValue,greenValue,blueValue):
+    pixel[RED] = redValue
+    pixel[GREEN] = greenValue
+    pixel[BLUE] = blueValue
+
+def drawLine(data,x0,y0,x1,y1):
+    if x1<0:
+        x1=0
+    elif x1>=len(data):
+        x1=len(data)-1
+    if y1<0:
+        y1=0
+    elif y1>=len(data[0]):
+        y1=len(data[0])-1
+    for i in range(1,100):
+        alpha = i/100.0
+        colorPixel(data[int(round(x0+alpha*(x1-x0)))][int(round(y0+alpha*(y1-y0)))],255,255,255)
+
 
 
 
@@ -140,8 +170,10 @@ def determineAngleFromPicture(data):
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
+                colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+3)%4                 #(x+3)%4 corresponds to (x-1)%4
             else:                                           #Not-Red
+                colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+1)%4
 
 
@@ -155,6 +187,7 @@ def determineAngleFromPicture(data):
             maximumLength = length
             maximumBin = binBinBin
 
+    drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
     relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
     return [angleToTarget,relativeVerticalFreeSpace,startj]
@@ -168,62 +201,24 @@ def determineAngleFromPicture(data):
 
 
 
+######
+##
+## Process images for testing
+##
+#####
+def convert_image(in_name, out_name):
+    data = image.imread(in_name)
+    start_time = time.clock()
+    angle,vertical,startj = determineAngleFromPicture(data)
+    print( time.clock() - start_time, "seconds", angle, vertical,startj)
+    misc.imsave(out_name, data)
 
-
-
-
-
-def updateSpeed(motor,speed):
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
-
-
-steering = PORT_A
-motor1 = PORT_B
-motor2 = PORT_C
-steeringSpeed = -75
-motorSpeed = -50
-
-BrickPiSetup()
-BrickPi.MotorEnable[steering] = 1
-BrickPi.MotorEnable[motor1] = 1
-BrickPi.MotorEnable[motor2] = 1
-BrickPiSetupSensors()
-BrickPi.Timeout=20000
-BrickPiSetTimeout()
-
-
-with picamera.PiCamera() as camera:
-    with picamera.array.PiRGBArray(camera) as output:
-        camera.resolution = (320, 240)
-        i=0
-        while True:
-            i+=1
-            updateSpeed(motor1,motorSpeed)
-            updateSpeed(motor2,motorSpeed)
-            if i%3 == 0:
-                camera.capture("output_%s.jpg" % str(datetime.now()), format='jpeg', use_video_port = True)
-            camera.capture(output, 'rgb', use_video_port = True)
-            target,vspace,startj = determineAngleFromPicture(output.array)
-            print(target,vspace,startj)
-            output.truncate(0)
-            if startj>180:
-                    updateSpeed(steering,steeringSpeed)
-            elif startj<140:
-                    updateSpeed(steering,-steeringSpeed)
-            else:
-                if target < 0:
-                    updateSpeed(steering,steeringSpeed)
-                else:
-                    updateSpeed(steering,-steeringSpeed)
-            
-
-
-
+in_dir = './test_data/test3/'
+out_dir = './result/'
+all_items = listdir(in_dir)
+index = 0
+for item in all_items:
+    out_name = out_dir + "sample_" + str(index) + ".png"
+    in_name = in_dir + item
+    convert_image(in_name, out_name)
+    index += 1
