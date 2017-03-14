@@ -39,12 +39,7 @@ def centreOfRed(data):
             j = centre-dj
             if isInRedRegion(i,j,data):
                 return searchHorizontalCentre(data,i,j)
-    centrepixel = data[len(data)//2][centre]
-    if centrepixel[0]+centrepixel[1]+centrepixel[2] < 100:
-        updateSpeed(motor1,0)
-        updateSpeed(motor2,0)
     return 0
-
 
 
 ############################################################################
@@ -80,6 +75,12 @@ BrickPi.MotorEnable[motor2] = 1
 BrickPiSetupSensors()
 BrickPi.Timeout=3600000
 BrickPiSetTimeout()
+time.sleep(.1)
+BrickPi.Timeout=3600000
+BrickPiSetTimeout()
+time.sleep(.1)
+BrickPi.Timeout=3600000
+BrickPiSetTimeout()
 
 updateSpeed(motor1,motorSpeed)
 updateSpeed(motor2,motorSpeed)
@@ -97,7 +98,9 @@ with picamera.PiCamera() as camera:
         camera.resolution = (320, 240)
         while True:
             camera.capture(output, 'rgb', use_video_port = True)
-            if centreOfRed(output.array)>160:
+            cor = centreOfRed(output.array)
+            print cor
+            if cor>160:
                 updateSpeed(steering,steeringSpeed)
             else:
                 updateSpeed(steering,-steeringSpeed)

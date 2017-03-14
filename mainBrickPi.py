@@ -248,8 +248,8 @@ with picamera.PiCamera() as camera:
         i=0
         while True:
             i+=1
-            if i%3 == 0:
-                camera.capture("output_%s.jpg" % str(datetime.now()), format='jpeg', use_video_port = True)
+            #if i%2 == 0:
+                #camera.capture("output_%s.jpg" % str(datetime.now()), format='jpeg', use_video_port = True)
             camera.capture(output, 'rgb', use_video_port = True)
             target,vspace,startj = determineAngleFromPicture(output.array)
             print(target,vspace,startj)
