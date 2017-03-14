@@ -1,6 +1,6 @@
-#from BrickPi import *
-#import picamera
-#import picamera.array
+from BrickPi import *
+import picamera
+import picamera.array
 import time
 from datetime import datetime
 
@@ -169,10 +169,10 @@ def determineAngleFromPicture(data):
             direction = (direction+1)%4
         else:
             if isRed(data[i][j]):                           #Red
-                colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
+                #colorPixel(data[i][j],255,200,200)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+3)%4                 #(x+3)%4 corresponds to (x-1)%4
             else:                                           #Not-Red
-                colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
+                #colorPixel(data[i][j],200,255,255)          #FOR TESTING PURPOSES ONLY
                 direction = (direction+1)%4
 
 
@@ -186,7 +186,7 @@ def determineAngleFromPicture(data):
             maximumLength = length
             maximumBin = binBinBin
     
-    drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
+    #drawLine(data,len(data)-1,len(data[0])//2,arrowI[maximumBin],arrowJ[maximumBin])      #FOR TESTING PURPOSES ONLY
     angleToTarget = angle(arrowI[maximumBin],arrowJ[maximumBin],len(data)-1,len(data[0])//2)
     relativeVerticalFreeSpace = abs(starti-arrowI[maximumBin])/(1.0*len(data))
     return [angleToTarget,relativeVerticalFreeSpace,startj]
@@ -202,19 +202,9 @@ def determineAngleFromPicture(data):
 
 
 
-'''
 
 
-def updateSpeed(motor,speed):
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
-    BrickPi.MotorSpeed[motor] = speed
-    BrickPiUpdateValues()
-    time.sleep(.01)
+###############################################################################################################################
 
 
 steering = PORT_A
@@ -232,28 +222,46 @@ BrickPi.Timeout=20000
 BrickPiSetTimeout()
 
 
+
+def updateSpeed(sSpeed,mSpeed):
+    BrickPi.MotorSpeed[steering] = sSpeed
+    BrickPi.MotorSpeed[motor1] = mSpeed
+    BrickPi.MotorSpeed[motor2] = mSpeed
+    BrickPiUpdateValues()
+    time.sleep(.01)
+    BrickPi.MotorSpeed[steering] = sSpeed
+    BrickPi.MotorSpeed[motor1] = mSpeed
+    BrickPi.MotorSpeed[motor2] = mSpeed
+    BrickPiUpdateValues()
+    time.sleep(.01)
+    BrickPi.MotorSpeed[steering] = sSpeed
+    BrickPi.MotorSpeed[motor1] = mSpeed
+    BrickPi.MotorSpeed[motor2] = mSpeed
+    BrickPiUpdateValues()
+    time.sleep(.01)
+
+
+
 with picamera.PiCamera() as camera:
     with picamera.array.PiRGBArray(camera) as output:
         camera.resolution = (320, 240)
         i=0
         while True:
             i+=1
-            updateSpeed(motor1,motorSpeed)
-            updateSpeed(motor2,motorSpeed)
             if i%3 == 0:
                 camera.capture("output_%s.jpg" % str(datetime.now()), format='jpeg', use_video_port = True)
             camera.capture(output, 'rgb', use_video_port = True)
             target,vspace,startj = determineAngleFromPicture(output.array)
             print(target,vspace,startj)
             output.truncate(0)
-            if startj>180:
-                    updateSpeed(steering,steeringSpeed)
-            elif startj<140:
-                    updateSpeed(steering,-steeringSpeed)
+            if startj>165:
+                    updateSpeed(steeringSpeed,motorSpeed)
+            elif startj<155:
+                    updateSpeed(-steeringSpeed,motorSpeed)
             else:
                 if target < 0:
-                    updateSpeed(steering,steeringSpeed)
+                    updateSpeed(steeringSpeed,motorSpeed)
                 else:
-                    updateSpeed(steering,-steeringSpeed)
+                    updateSpeed(-steeringSpeed,motorSpeed)
             
-'''
+

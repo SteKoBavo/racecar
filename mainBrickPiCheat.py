@@ -39,7 +39,11 @@ def centreOfRed(data):
             j = centre-dj
             if isInRedRegion(i,j,data):
                 return searchHorizontalCentre(data,i,j)
-    return False
+    centrepixel = data[len(data)//2][centre]
+    if centrepixel[0]+centrepixel[1]+centrepixel[2] < 100:
+        updateSpeed(motor1,0)
+        updateSpeed(motor2,0)
+    return 0
 
 
 
@@ -93,7 +97,7 @@ with picamera.PiCamera() as camera:
         camera.resolution = (320, 240)
         while True:
             camera.capture(output, 'rgb', use_video_port = True)
-            if centreOfRed(output.array)<170:
+            if centreOfRed(output.array)>160:
                 updateSpeed(steering,steeringSpeed)
             else:
                 updateSpeed(steering,-steeringSpeed)
